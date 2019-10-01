@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+  datanode:
+    build: ./node
+    environment:
+      - DEBUG
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/srv
+    stdin_open: true
+    tty: true
+    command: app/Datanode.py
+
+  servidor:
+    build: ./node
+    environment:
+      - DEBUG
+    ports:
+      - 5500:5500
+    volumes:
+      - .:/srv
+    command: app/Headnode.py
+    stdin_open: true
+    tty: true
+    depends_on:
+      - "datanode"
