@@ -5,6 +5,9 @@ import struct
 
 MCAST_GRP = '224.10.10.10'
 MCAST_PORT = 5000
+NODE_NAME = ''
+
+NODE_NAME = input("ingrese un nombre para este nodo: ")
 
 # Create the socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,6 +24,13 @@ sock.setsockopt(
     socket.IP_ADD_MEMBERSHIP,
     mreq)
 
+try:
+    IP = sock.getsockname()[0][0]
+except:
+    IP = "Error to get ip"
+
+NODE_ACK =  str("-".join( (str(NODE_NAME), str(1) ) )).encode('utf-8')
+
 # Receive/respond loop
 while True:
     print('\nEsperando mensajes...')
@@ -31,5 +41,5 @@ while True:
     print(data)
 
     print('Enviando acknowledgement a', address)
-    sock.sendto(b'ack', address)
+    sock.sendto(NODE_ACK, address)
 

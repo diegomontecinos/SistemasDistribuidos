@@ -5,18 +5,22 @@
 import socket
 import struct
 import unicodedata
+from datetime import datetime
 
 
 MCAST_GRP = '224.10.10.10'
 MCAST_PORT = 5000
+HB_FILE_PATH = './hearbeat_server.txt'
 
 def WritteData(data, file_path):
-
+    fecha= str(datetime.now())
     try:
         file = open(file_path, 'a')
-        file.write(str(data), )
+        file.write(str("{0}-{1}\n".format(fecha, data) ))
     except FileNotFoundError :
         file = open(file_path, 'w')
+        file.write("FECHA-IP-PUERTO-NOMBRE-ESTADO\n")
+        file.write(str("{0}-{1}\n".format(fecha, data) ))
     except IOError:
         print('Error al abrir {}'.format(file_path))
         return False
@@ -47,7 +51,10 @@ def MultiCast(message):
                 print('Se acabo el tiempo y no hay respuestas')
                 break
             else:
+                format_data = "-".join((str(server[0]),str(server[1]), str(data.decode('utf-8')))) 
                 print('recivido:{!r} desde {}'.format(data, server))
+                print("formatdata: {}".format(format_data))
+                WritteData(format_data, HB_FILE_PATH)
     finally:
         print('cerrando socket multicast')
     return(True)
