@@ -150,7 +150,7 @@ def main():
 
     timer = Repeat(5)
     timer.start()
-    timer.done()
+    
 
     #Create tcp socket
     tcp_socket =  socket.socket( socket.AF_INET, socket.SOCK_STREAM)
@@ -165,24 +165,24 @@ def main():
     while True:
         #Esperando conexiones
         conn, addr = tcp_socket.accept()
+        print("Conexion establecida con ", addr)
         try:
-            print("*9999********************************************")
-            print("Conexión establecida con ")
+            print("*********************************************")
             while True:
                 in_message = conn.recv(1024)
                 #se recivieron datos
                 if(in_message):
-                    #nombre = StoreData(in_message)
+                    nombre = StoreData(in_message)
                     print("Guardando datos....")
                     print("*********************************************")
                     conn.sendall(str(nombre).encode('utf-8'))
-                    break
                 else:
                     print("No se recivieron datos desde {} - {}".format(HOST , PORT))
                     break
         except:
             pass
     
+    timer.done()
     return 0
 
         

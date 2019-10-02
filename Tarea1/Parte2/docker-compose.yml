@@ -1,16 +1,17 @@
-version: '2'
+version: '3'
 
 services:
 
   cliente:
-    build: ./node
+    build: ./client
     environment:
       - DEBUG
     network_mode: host
     ports:
-      - 7000:7000
+      - 8500:8500
     volumes:
-      - .:/srv
+      - ./client/app/registro_cliente.txt:/registro_cliente.txt
+      - ./client/app/mensajes.txt:/mensajes.txt
     stdin_open: true
     tty: true
     command: app/Client.py
@@ -18,40 +19,54 @@ services:
       - servidor
 
   datanode1:
-    build: ./node
+    build: ./datanode1
     environment:
       - DEBUG
     ports:
       - 7500:7500
     volumes:
-      - .:/srv
+      - ./datanode1/app/data.txt:/data.txt
     stdin_open: true
     tty: true
     command: app/Datanode.py
 
   datanode2:
-    build: ./node
+    build: ./datanode2
     environment:
       - DEBUG
     ports:
       - 8000:8000
     volumes:
-      - .:/srv
+      - ./datanode2/app/data.txt:/data.txt
+    stdin_open: true
+    tty: true
+    command: app/Datanode.py
+
+  datanode3:
+    build: ./datanode3
+    environment:
+      - DEBUG
+    ports:
+      - 7000:7000
+    volumes:
+      - ./datanode3/app/data.txt:/data.txt
     stdin_open: true
     tty: true
     command: app/Datanode.py
 
   servidor:
-    build: ./node
+    build: ./headnode
     environment:
       - DEBUG
     ports:
       - 6000:6000
     volumes:
-      - .:/srv
+      - ./headnode/app/hearbeat_server.txt:/hearbeat_server.txt
+      - ./headnode/app/registro_server.txt:/registro_server.txt
     stdin_open: true
     tty: true
     command: app/Headnode.py
     depends_on:
       - datanode1
       - datanode2
+      - datanode3
