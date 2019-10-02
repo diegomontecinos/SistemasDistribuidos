@@ -1,17 +1,21 @@
 version: '2'
 
 services:
-  datanode:
+
+  cliente:
     build: ./node
     environment:
       - DEBUG
+    network_mode: host
     ports:
-      - 8000:8000
+      - 5500:5500
     volumes:
       - .:/srv
     stdin_open: true
     tty: true
-    command: app/Datanode.py
+    command: app/Client.py
+    depends_on:
+      - "servidor"
 
   servidor:
     build: ./node
@@ -26,3 +30,18 @@ services:
     tty: true
     depends_on:
       - "datanode"
+
+  datanode:
+    build: ./node
+    environment:
+      - DEBUG
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/srv
+    stdin_open: true
+    tty: true
+    command: app/Datanode.py
+
+
+  

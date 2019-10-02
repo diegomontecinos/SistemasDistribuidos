@@ -13,4 +13,4 @@ COPY . /
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ ]
+CMD []

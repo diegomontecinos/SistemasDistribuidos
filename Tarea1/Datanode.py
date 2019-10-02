@@ -1,13 +1,33 @@
-
 import socket
 import struct
+import unicodedata
+import threading
+import time
+from random import random
+from datetime import datetime
 
 
 MCAST_GRP = '224.10.10.10'
-MCAST_PORT = 5000
+MCAST_PORT = 8000
 NODE_NAME = ''
+DATA_FILE_PATH = './data.txt'
+#NODE_NAME = input("ingrese un nombre para este nodo: ")
+NODE_NAME = "NODO1"
 
-NODE_NAME = input("ingrese un nombre para este nodo: ")
+def WritteData(data, file_path):
+    fecha= str(datetime.now())
+    try:
+        file = open(file_path, 'a')
+        file.write(str("{0}-{1}\n".format(fecha, data) ))
+        file.close()
+    except FileNotFoundError :
+        file = open(file_path, 'w')
+        file.write("FECHA-IP-PUERTO-NOMBRE-ESTADO\n")
+        file.write(str("{0}-{1}\n".format(fecha, data) ))
+        file.close()
+    except IOError:
+        print('Error al abrir {}'.format(file_path))
+        return False
 
 # Create the socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -33,13 +53,22 @@ NODE_ACK =  str("-".join( (str(NODE_NAME), str(1) ) )).encode('utf-8')
 
 # Receive/respond loop
 while True:
+    print("**********************************************************")
     print('\nEsperando mensajes...')
     data, address = sock.recvfrom(1024)
 
-    print('recibidos {} bytes desde {}'.format(
-        len(data), address))
-    print(data)
+    print('recibidos {} bytes desde {}-{} con mensaje {}'.format(len(data), address[0], address[1], data))
+    
 
-    print('Enviando acknowledgement a', address)
-    sock.sendto(NODE_ACK, address)
+    if(str(data.decode('utf-8')) == "state"):
+        print('Enviando Estado a', address)
+        sock.sendto(NODE_ACK, address)
+    
+    else:
+        nombre, mensaje = str(data.decode()).split("#-#-#")
+        if (nombre == str(NODE_NAME)):
+            print("soy {} y guardare tus datos: {}".format(NODE_NAME, mensaje))
+            WritteData(mensaje, DATA_FILE_PATH)
+            sock.sendto(str("saved").encode('utf-8'), address)
+    print("**********************************************************")
 
