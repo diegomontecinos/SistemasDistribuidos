@@ -1,0 +1,57 @@
+version: '2'
+
+services:
+
+  cliente:
+    build: ./node
+    environment:
+      - DEBUG
+    network_mode: host
+    ports:
+      - 7000:7000
+    volumes:
+      - .:/srv
+    stdin_open: true
+    tty: true
+    command: app/Client.py
+    depends_on:
+      - servidor
+
+  datanode1:
+    build: ./node
+    environment:
+      - DEBUG
+    ports:
+      - 7500:7500
+    volumes:
+      - .:/srv
+    stdin_open: true
+    tty: true
+    command: app/Datanode.py
+
+  datanode2:
+    build: ./node
+    environment:
+      - DEBUG
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/srv
+    stdin_open: true
+    tty: true
+    command: app/Datanode.py
+
+  servidor:
+    build: ./node
+    environment:
+      - DEBUG
+    ports:
+      - 6000:6000
+    volumes:
+      - .:/srv
+    stdin_open: true
+    tty: true
+    command: app/Headnode.py
+    depends_on:
+      - datanode1
+      - datanode2
