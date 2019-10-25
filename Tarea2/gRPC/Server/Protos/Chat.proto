@@ -8,11 +8,11 @@ service Chat {
 
     */
 
-    rpc Saludo (Saludos) returns (Saludos);
+    rpc Saludo (Saludos) returns (Saludos){}
 
-    rpc EnvioSolicitud (MensajeCliente) returns (Confirmacion);
+    rpc EnvioSolicitud (MensajeCliente) returns (Confirmacion){}
 
-    rpc DespachoMensajes (Consulta) returns (stream MensajeCliente);
+    rpc DespachoMensajes (Consulta) returns (stream MensajeCliente){}
 
 }
 

@@ -1,4 +1,4 @@
-#python -m grpc_tools.protoc -I ./Server/Protos --python_out=./Server --grpc_python_out=./Server ./Server/Protos/Chat.proto
+#python -m grpc_tools.protoc -I ./Server/Protos --python_out=./Server --grpc_python_out=./Server ./Server/Protos/Chat.proto ; python -m grpc_tools.protoc -I ./Server/Protos --python_out=./Client --grpc_python_out=./Client ./Server/Protos/Chat.proto
 
 #imports de rpc y protos
 import grpc
@@ -8,6 +8,7 @@ import Chat_pb2_grpc
 #imports Funcionales
 import json
 from datetime import datetime
+from concurrent import futures
 
 
 IP = "[::]"
@@ -23,13 +24,15 @@ class ChatDB ():
         self.Clients = {}
 
         try:
-            open(FILE,"r")
+            file = open(FILE,"r")
             print("Ya existe un archivo log")
+            file.close()
         except IOError:
             print("No se encontro un archivo log")
             try: 
-                open(FILE, "w")
+                file = open(FILE, "w")
                 print("Archivo log creado exitosamente")
+                file.close()
             except IOError:
                 print("Ha ocurrido un error inesperado al crear el archivo log")
 
@@ -40,7 +43,8 @@ class ChatDB ():
             print("El cliente {0} ya existe".format(ClientId))
             return False
         else:
-            self.Clientes[ClientId] = []
+            self.Clients[ClientId] = []
+            print("Cliente {0} agregado exitosamente!".format(ClientId))
             return True
 
 
@@ -48,24 +52,29 @@ class ChatDB ():
     def AddMessage(self, ClientId, SecondId, Message):
         TimeStamp = datetime.now().strftime("%d-%b-%Y/%H-%M-%S")
         #IdMensaje = IDEMISOR-IDRECEPTOR-TIMESTAMP
-        IdMensaje = str(ClientId)+"#"+str(SecondId)+"#"+str(TimeStamp)
+        IdMessage = str(ClientId)+"#"+str(SecondId)+"#"+str(TimeStamp)
         try:
             log = open(FILE,"a")
         except IOError:
             print("[ERROR] Algo salio mal, al intentar registrar el mensaje: "+ str(Message)+" entre los clientes :"+str(ClientId)+" -- "+str(SecondId))
             return
 
-        Data = "{0}#{1}\n".format(IdMensaje,str(Message))
+        Data = "{0}#{1}\n".format(IdMessage,str(Message))
 
         if ClientId in self.Clients.keys():
             if SecondId in self.Clients.keys():
                     self.Clients[SecondId].append(Data)          
                     log.write(Data)
                     print("[EXITO] El mensaje: "+ str(Message)+" entre los clientes :"+str(ClientId)+" -- "+str(SecondId)+ " Se registro correctame")
+                    return Chat_pb2.Confirmacion(Tipo = 1, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "" )
+
             else:
-                print("El reseptor {0} no se ecnuentra registrado")
+                print("El receptor {0} no se ecnuentra registrado".format(SecondId))
+                return Chat_pb2.Confirmacion(Tipo = 0, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "El receptor {0} no se ecnuentra registrado".format(SecondId) )
         else:
-            print("El emisor {0} no se encuentra registrado")
+            print("El emisor {0} no se encuentra registrado".format(ClientId))
+        log.close()
+        return Chat_pb2.Confirmacion(Tipo = 0, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "El emisor {0} no se encuentra registrado".format(ClientId))
     
     def GetMessages(self,ClientId):
         temp = []
@@ -74,14 +83,12 @@ class ChatDB ():
                 temp.appen(mensaje)
 
         except:
-            print("Error al acceder al buffer de mensajes del cliente {0}".format(request.IdCliente))
+            print("Error al acceder al buffer de mensajes del cliente {0}".format(ClientId))
         
         self.Clients[ClientId].clear()
         for m in temp:
             IdEmisor, IdReceptor, TimeStamp, Mensaje = m.split(sep="#", maxsplit= 3 )
-
-            mensaje = Chat_pb2.MensajeCliente(IdPropietario = IdEmisor, IdDestinatario = IdReceptor, IdMensaje = "#".join(IdEmisor,IdReceptor, TimeStamp), Mensaje = Mensaje, Error = "" )
-
+            mensaje = Chat_pb2.MensajeCliente(IdPropietario = IdEmisor, IdDestinatario = IdReceptor, IdMensaje = "#".join([IdEmisor,IdReceptor, TimeStamp]), Mensaje = Mensaje, Error = "" )
             yield mensaje
 
         
@@ -92,23 +99,27 @@ class ChatServicer (Chat_pb2_grpc.ChatServicer):
 
     def __init__(self):
         self.Directorio = ChatDB()
-        self.ServerId = S01
+        self.ServerId = "S01"
         self.ClientNumber = 0
 
         print("iniciando servicios")
     
     def Saludo(self, request, context):
+
+        NewId = "Cliente-"+str(self.ClientNumber)
         if (request.Tipo == 0):
-            if self.Directorio.AddClient(request.IdCliente):
-                return Chat_pb2.Saludos(Tipo = 1 IdCliente = "", IdServidor = "", Error = "")
+            if (self.Directorio.AddClient(NewId)):
+                self.ClientNumber = self.ClientNumber +1
+                print("Se ha agregado a {0} a la lista de clientes".format(NewId))
+                return Chat_pb2.Saludos(Tipo = 1, IdCliente = NewId, IdServidor = "", Error = "")
             else:
-                return Chat_pb2.Saludos(Tipo = 1 IdCliente = "", IdServidor = "", Error = "Error al ser agregado al servidor, reintentar")
+                return Chat_pb2.Saludos(Tipo = 1, IdCliente = "", IdServidor = "", Error = "Error al ser agregado al servidor, El cliente ya exixste")
         elif (request.Tipo == 1):
             print("USTED NO DEBERIA ESTAR AQUI! ¬¬")
 
 
     def EnvioSolicitud(self, request, context):
-        self.Directorio.AddMessage(request.IdPropietario, request.IdDestinatario, request.Mensaje)
+        return self.Directorio.AddMessage(request.IdPropietario, request.IdDestinatario, request.Mensaje)
 
     def DespachoMensajes(self, request, context):
         while True:
@@ -118,13 +129,12 @@ class ChatServicer (Chat_pb2_grpc.ChatServicer):
 
 def serve():
     
-    ChatServer = grpc.server(futures.thread_poolExecutor(max_workers = 10))
-    Chat_pb2_grpc.add_ChatServicer_to_server(ChatServicer, ChatServer)
+    ChatServer = grpc.server(futures.ThreadPoolExecutor(max_workers = 10))
+    Chat_pb2_grpc.add_ChatServicer_to_server(ChatServicer(), ChatServer)
     ChatServer.add_insecure_port(IP+":"+PORT)
     ChatServer.start()
+    ChatServer.wait_for_termination()
 
 if __name__ == '__main__':
 
-    #serve()
-    datos = ChatDB()
-    datos.AddClient("C01")
+    serve()
