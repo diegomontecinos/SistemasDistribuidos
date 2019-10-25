@@ -1,0 +1,22 @@
+{   "Servidor": "Servidor1",
+    "Clientes":
+    [
+        {
+            "IdCliente": "Clientex",
+            "Enviados": 
+            [ 
+                {
+                    "IdReceptor": "cleinteZ",
+                    "Mensaje": "blablabla"
+                }
+            ],
+            "Recibidos":
+            [
+                {
+                    "IdEmisor": "ClienteR",
+                    "Mensaje": "Balbalba"
+                }
+            ]
+        }
+    ]
+}

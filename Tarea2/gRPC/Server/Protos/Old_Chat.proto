@@ -10,9 +10,7 @@ service Chat {
 
     rpc Saludo (Saludos) returns (Saludos);
 
-    rpc EnvioSolicitud (MensajeCliente) returns (Confirmacion);
-
-    rpc DespachoMensajes (Consulta) returns (stream MensajeCliente);
+    rpc EnvioMensaje (MensajeCliente) returns (Confirmacion);
 
 }
 
@@ -60,15 +58,6 @@ message MensajeCliente {
     string Mensaje = 4;
     string Error = 5;
 
-}
-
-/*
-IdCliente:
-    Identificador unico del cliente que envia el mensaje
-*/
-
-message Consulta {
-    string IdCliente = 1;
 }
 
 /*
