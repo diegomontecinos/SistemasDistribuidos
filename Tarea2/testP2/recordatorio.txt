@@ -1,0 +1,4 @@
+ejecutar el rabbitt start
+ejecutar el servidor 
+ejecuar el cliente
+fin-> ejecutar rabbit stop
