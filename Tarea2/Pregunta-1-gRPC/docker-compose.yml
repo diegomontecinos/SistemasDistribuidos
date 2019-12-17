@@ -1,53 +1,32 @@
-version: '1'
+version: '3.7'
 
 services:
 
   servidor:
+    container_name: servidor
     build: ./Server
     environment:
       - DEBUG
     ports:
       - 6000:6500
     volumes:
-      - type: volume
-        source: ./
-        target: /data
+      - ./Server:/Server/
     stdin_open: true
     tty: true
+    command: Server/app/Server.py
     
-    """
-    command: app/Headnode.py
-    depends_on:
-      - datanode1
-    """
-  cliente_1:
-    build: ./client_1
+
+  cliente:
+    container_name: cliente
+    build: ./Generic_Client
     environment:
       - DEBUG
     ports:
       - 8500:8500
     volumes:
-      - type: volume
-        source: ./
-        target: /data
+      - ./Generic_Client:/Cliente/
     stdin_open: true
     tty: true
-    command: app/Client.py
+    command: Cliente/app/Client.py
     depends_on:
       - servidor
-
-  cliente_2:
-    build: ./client_2
-    environment:
-      - DEBUG
-    ports:
-      - 8600:8600
-    volumes:
-      - type: volume
-        source: ./
-        target: /data
-    stdin_open: true
-    tty: true
-    command: app/Client.py
-    depends_on:
-      - servidor      

@@ -103,7 +103,6 @@ class ChatServicer (Chat_pb2_grpc.ChatServicer):
         self.Directorio = ChatDB()
         self.ServerId = "S01"
         self.ClientNumber = 0
-
         print("iniciando servicios")
     
     def Saludo(self, request, context):
