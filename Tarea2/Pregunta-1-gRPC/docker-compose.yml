@@ -1,72 +1,53 @@
-version: '3'
+version: '1'
 
 services:
 
-  cliente:
-    build: ./client
+  servidor:
+    build: ./Server
     environment:
       - DEBUG
-    network_mode: host
+    ports:
+      - 6000:6500
+    volumes:
+      - type: volume
+        source: ./
+        target: /data
+    stdin_open: true
+    tty: true
+    
+    """
+    command: app/Headnode.py
+    depends_on:
+      - datanode1
+    """
+  cliente_1:
+    build: ./client_1
+    environment:
+      - DEBUG
     ports:
       - 8500:8500
     volumes:
-      - ./client/app/registro_cliente.txt:/registro_cliente.txt
-      - ./client/app/mensajes.txt:/mensajes.txt
+      - type: volume
+        source: ./
+        target: /data
     stdin_open: true
     tty: true
     command: app/Client.py
     depends_on:
       - servidor
 
-  datanode1:
-    build: ./datanode1
+  cliente_2:
+    build: ./client_2
     environment:
       - DEBUG
     ports:
-      - 7500:7500
+      - 8600:8600
     volumes:
-      - ./datanode1/app/data.txt:/data.txt
+      - type: volume
+        source: ./
+        target: /data
     stdin_open: true
     tty: true
-    command: app/Datanode.py
-
-  datanode2:
-    build: ./datanode2
-    environment:
-      - DEBUG
-    ports:
-      - 8000:8000
-    volumes:
-      - ./datanode2/app/data.txt:/data.txt
-    stdin_open: true
-    tty: true
-    command: app/Datanode.py
-
-  datanode3:
-    build: ./datanode3
-    environment:
-      - DEBUG
-    ports:
-      - 7000:7000
-    volumes:
-      - ./datanode3/app/data.txt:/data.txt
-    stdin_open: true
-    tty: true
-    command: app/Datanode.py
-
-  servidor:
-    build: ./headnode
-    environment:
-      - DEBUG
-    ports:
-      - 6000:6000
-    volumes:
-      - ./headnode/app/hearbeat_server.txt:/hearbeat_server.txt
-      - ./headnode/app/registro_server.txt:/registro_server.txt
-    stdin_open: true
-    tty: true
-    command: app/Headnode.py
+    command: app/Client.py
     depends_on:
-      - datanode1
-      - datanode2
-      - datanode3
+      - servidor      

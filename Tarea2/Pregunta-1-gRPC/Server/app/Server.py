@@ -80,9 +80,11 @@ class ChatDB ():
         temp = []
         try:
             for mensaje in self.Clients[ClientId]:
-                temp.appen(mensaje)
-
-        except:
+                temp.append(mensaje)
+            print("se obtubieron los mensajes del usuario {0}".format(ClientId))
+        
+        except Exception as error:
+            print(error)
             print("Error al acceder al buffer de mensajes del cliente {0}".format(ClientId))
         
         self.Clients[ClientId].clear()
@@ -106,17 +108,16 @@ class ChatServicer (Chat_pb2_grpc.ChatServicer):
     
     def Saludo(self, request, context):
 
-        NewId = "Cliente-"+str(self.ClientNumber)
+        NewId = "Cliente-"+str(self.ClientNumber+1)
         if (request.Tipo == 0):
             if (self.Directorio.AddClient(NewId)):
                 self.ClientNumber = self.ClientNumber +1
                 print("Se ha agregado a {0} a la lista de clientes".format(NewId))
-                return Chat_pb2.Saludos(Tipo = 1, IdCliente = NewId, IdServidor = "", Error = "")
+                return Chat_pb2.Saludos(Tipo = 1, IdCliente = NewId, IdServidor = str(self.ServerId), Error = "")
             else:
-                return Chat_pb2.Saludos(Tipo = 1, IdCliente = "", IdServidor = "", Error = "Error al ser agregado al servidor, El cliente ya exixste")
+                return Chat_pb2.Saludos(Tipo = 1, IdCliente = "", IdServidor = "", Error = "Error al ser agregado al servidor, El cliente ya existe")
         elif (request.Tipo == 1):
             print("USTED NO DEBERIA ESTAR AQUI! ¬¬")
-
 
     def EnvioSolicitud(self, request, context):
         return self.Directorio.AddMessage(request.IdPropietario, request.IdDestinatario, request.Mensaje)
