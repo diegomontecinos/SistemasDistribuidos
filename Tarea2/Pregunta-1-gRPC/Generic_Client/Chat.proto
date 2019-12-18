@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package ChatRPC;
+
+service Chat {
+
+    /*
+
+    */
+
+    rpc Saludo (Saludos) returns (Saludos){}
+
+    rpc EnvioSolicitud (MensajeCliente) returns (Confirmacion){}
+
+    rpc DespachoMensajes (Consulta) returns (stream MensajeCliente){}
+
+}
+
+
+
+/*
+TipoMensaje (OBLIGATORIO):
+    0 -> Cliente iniciando conexion con servidor
+    1 -> Servidor Aceptando conexion
+
+IdCliente (OPCIONAL):
+    Identificador unico que entrega el servidor al cliente
+
+IdServidor(OPCIONAL): 
+    Identificador unico intrisico del servidor
+
+Error (OPCIONAL):
+    Mensaje de error en caso de ser necsario
+*/
+
+message Saludos {
+    int32  Tipo = 1; 
+    string IdCliente  = 2;
+    string IdServidor = 3;
+    string Error = 4;
+}
+
+/*
+IdPropietario:
+    Identificador unico del cliente que envia el mensaje 
+
+IdDestinatario:
+    Identificador unico de quien debe recivir el mensaje
+Mensaje:
+    Contenido del mensaje
+Error:
+    Mensaje de erro en caso de ser necesario
+*/
+
+message MensajeCliente {
+
+    string IdPropietario = 1;
+    string IdDestinatario = 2;
+    string IdMensaje = 3;
+    string Mensaje = 4;
+    string Error = 5;
+
+}
+
+/*
+IdCliente:
+    Identificador unico del cliente que envia el mensaje
+*/
+
+message Consulta {
+    string IdCliente = 1;
+}
+
+/*
+Tipo (OBLIGATORIO):
+    0 -> Error al eviar el mensaje al destinatario
+    1 -> Mensaje enviado con exito
+
+IdPropietario (OPCIONAL):
+    Identificador unico de quien envio el mensaje originalmente
+
+IdMensaje (OPCIONAL):
+    Identificador unico de cada mensaje
+
+Error (OPCIONAL):
+    Mensaje de error en caso de ser necesario
+*/
+
+message Confirmacion {
+    int32 Tipo = 1;
+    string IdPropietario = 2;
+    string IdMensaje = 3;
+    string Error = 4;
+}

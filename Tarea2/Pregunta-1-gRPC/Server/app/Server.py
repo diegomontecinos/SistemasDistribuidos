@@ -12,7 +12,9 @@ from concurrent import futures
 
 
 IP = "[::]"
-PORT = "50051"
+#IP = "0.0.0.0"
+#PORT = "50051"
+PORT = "8080"
 FILE = "log.txt"
 
 
