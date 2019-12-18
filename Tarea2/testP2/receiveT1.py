@@ -9,7 +9,7 @@ channel = connection.channel()
 channel.queue_declare(queue='hello')
 #recibir un mensaje... hay que suscribire a una cola
 def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body)
+    print(" [x] Received ",  body.decode())
 # 'decir' a rabbitmq que la funcion anterior recibe un mensaje de la cola declarada anteriormente
 channel.basic_consume(queue='hello',
     auto_ack=True,

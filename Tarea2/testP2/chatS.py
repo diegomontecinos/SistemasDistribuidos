@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+import pika
+import threading
+
+class Servidor():
+    def __init__(self):
+        self.conexiones = 0
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host='localhost')
+            )
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue='cola-saludos')
+        self.channel.basic_qos(prefetch_count=10)#cambiar para mas conexiones
+        self.channel.basic_consume(queue='cola-saludos', on_message_callback=self.handShake, auto_ack=True) #se ejecuta al recibir una request y manda una respuesta
+        threading.Thread(target=self.escuchar(),daemon = True).start()#no bloque el codigo
+        
+        
+
+    def handShake(self,ch, method, props, body):#on_request
+
+        self.conexiones+=1
+        response = self.conexiones
+
+        ch.basic_publish(exchange='',
+                        routing_key='cola-saludos',
+                        properties=pika.BasicProperties(correlation_id = \
+                            props.correlation_id),
+                        body=str(response))
+        ch.basic_ack(delivery_tag=method.delivery_tag)
+
+    def escuchar(self):
+        #while True:
+        print(" [x] Awaiting RPC requests")
+        self.channel.start_consuming()
+    
+    
+
+if __name__ == '__main__':
+    server = Servidor()
+    print('Pasamos la declaracion de la clase')
+    server.handShake()
+    

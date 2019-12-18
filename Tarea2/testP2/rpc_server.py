@@ -6,7 +6,7 @@ connection = pika.BlockingConnection(
 
 channel = connection.channel()
 
-channel.queue_declare(queue='rpc_queue')
+channel.queue_declare(queue='rpc_queue')#nombre de la cola
 
 def fib(n):
     if n == 0:
