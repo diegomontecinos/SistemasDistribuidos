@@ -2,9 +2,22 @@
 import pika
 import threading
 
+# Servidor
+# envíar y recivir mensajes
+# excribir en log.txt los mensajes enviados
+# ver clientes
+# ver todos los mensajes enviados de un cliente
+
+# mensajes  
+# ID unico
+# texto + timestamp
+
 class Servidor():
     def __init__(self):
-        self.conexiones = 0
+        self.conexiones = 0 #ID clientes
+        self.cant_mensajes = 0 #ID Mensajes
+        self.dir_mensajes = dict() #diccionario de 
+
 
         self.connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='localhost')
@@ -21,7 +34,7 @@ class Servidor():
     def handShake(self,ch, method, props, body):#on_request
 
         self.conexiones+=1
-        response = self.conexiones
+        response = "Cliente-"+str(self.conexiones)
 
         ch.basic_publish(exchange='',
                         routing_key=props.reply_to,

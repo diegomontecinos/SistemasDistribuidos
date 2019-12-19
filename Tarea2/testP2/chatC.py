@@ -3,6 +3,9 @@ import pika
 import uuid
 import logging
 
+# cliente
+# enviar y recibir mensajes
+# 
 
 class Consumer():
     def __init__(self):
@@ -40,7 +43,7 @@ class Consumer():
             body=str(n))
         while self.response is None:
             self.connection.process_data_events()
-        return int(self.response)
+        return (self.response)
 
 
 if __name__ == '__main__':
