@@ -5,13 +5,15 @@ import threading
 class Servidor():
     def __init__(self):
         self.conexiones = 0
+
         self.connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='localhost')
             )
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue='cola-saludos')
+
+        self.channel.queue_declare(queue='cola_IDS')
         self.channel.basic_qos(prefetch_count=10)#cambiar para mas conexiones
-        self.channel.basic_consume(queue='cola-saludos', on_message_callback=self.handShake, auto_ack=True) #se ejecuta al recibir una request y manda una respuesta
+        self.channel.basic_consume(queue='cola_IDS', on_message_callback=self.handShake, auto_ack=True) #se ejecuta al recibir una request y manda una respuesta
         threading.Thread(target=self.escuchar(),daemon = True).start()#no bloque el codigo
         
         
@@ -22,11 +24,12 @@ class Servidor():
         response = self.conexiones
 
         ch.basic_publish(exchange='',
-                        routing_key='cola-saludos',
+                        routing_key=props.reply_to,
                         properties=pika.BasicProperties(correlation_id = \
                             props.correlation_id),
                         body=str(response))
         ch.basic_ack(delivery_tag=method.delivery_tag)
+        #threading.Thread(target=self.escuchar(),daemon = True).start()#no bloque el codigo
 
     def escuchar(self):
         #while True:
@@ -37,6 +40,6 @@ class Servidor():
 
 if __name__ == '__main__':
     server = Servidor()
-    print('Pasamos la declaracion de la clase')
-    server.handShake()
+    #print('Pasamos la declaracion de la clase')
+    #server.handShake()
     

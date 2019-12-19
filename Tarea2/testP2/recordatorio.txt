@@ -5,3 +5,7 @@ fin-> ejecutar rabbit stop
 
 
 channel.queue_declare(queue=''[NOMBRE_COLA], exclusive=True) 
+
+
+clase servidor que tenga 2 objetos de clase publicador y consumidor
+igual para el cliente

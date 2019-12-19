@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import pika
 import uuid
+import logging
 
 
-class Consumidor():
+class Consumer():
     def __init__(self):
          # conexion al servidor rabbitmq
         self.connection = pika.BlockingConnection(
@@ -12,16 +13,18 @@ class Consumidor():
         self.channel = self.connection.channel()
                         # "crear" cola para mandar mensajes ''
         result = self.channel.queue_declare(queue='', exclusive=True)
-        self.callback_queue = result.method.queue
-        # cliente manda una direccion de la cola 'calback' para rcibir respuestas
+        self.callback_queue = result.method.queue  # cola de respuesta
+        # crea la cola en la que "consume" o le la respuesta en la cola callback y cuando hay algo, invoca a la funcion on_response
         self.channel.basic_consume(
             queue=self.callback_queue,
-            on_message_callback=self.on_response,
+            on_message_callback=self.on_response, 
             auto_ack=True)
 
     def on_response(self, ch, method, props, body):
         if self.corr_id == props.correlation_id:
-            self.response = body
+            self.response = body.decode()
+            self.ID = self.response
+
     
      # manda una solicitud RPC y bloquea hasta que recibe una respuesta
     def ID(self, n):
@@ -29,7 +32,7 @@ class Consumidor():
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(
             exchange='',
-            routing_key='cola-saludos',
+            routing_key='cola_IDS',
             properties=pika.BasicProperties(
                 reply_to=self.callback_queue,
                 correlation_id=self.corr_id,
@@ -41,7 +44,38 @@ class Consumidor():
 
 
 if __name__ == '__main__':
-    cliente = Consumidor()
+    cliente = Consumer()
     print(" [x] Requesting ID")
     id = cliente.ID(0)
     print(" [.] Got " , id)
+
+'''
+#LOGGER = logging.getLogger(__name__)
+class Consumer():
+    def __init__(self, ):
+        self.conexiones = 0
+        self.consuming = False
+        self.message = ''
+        
+    def connectar(self):
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host='localhost')
+        )
+        self.channel = self.connection.channel()
+
+    def callback(self, ch, method, props, body):
+        self.message = body.decode()
+
+
+class Publisher():
+    def __init__(self):
+        super().__init__()
+
+class Client():
+    def __init__(self):
+        self.consumidor = Consumer()
+        self.publicador = Publisher()
+
+if __name__ == '__main__':
+    cliente = Client()
+    '''
