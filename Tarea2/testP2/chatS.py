@@ -107,7 +107,7 @@ class Publishers():
     
 
 if __name__ == '__main__':
-    server = ConsumerSS()
+    server = ConsumerS()
     #print('Pasamos la declaracion de la clase')
     #server.handShake()
     
