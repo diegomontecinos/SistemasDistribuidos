@@ -9,15 +9,15 @@ import threading
 import time
 
 #Windows Ip
-IP = "localhost"
+#IP = "localhost"
 #Dockers IPs
-#IP = "0.0.0.0"
+IP = "0.0.0.0"
 #IP = "server"
 
 #Windows Port
-PORT = "50051"
+#PORT = "50051"
 #Docker Prot
-#PORT = "8080"
+PORT = "8080"
 FILE = "log.txt"
 
 class Client:

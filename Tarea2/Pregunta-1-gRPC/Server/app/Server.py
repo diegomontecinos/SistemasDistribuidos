@@ -11,13 +11,13 @@ from datetime import datetime
 from concurrent import futures
 
 
-IP = "[::]"
-#IP = "0.0.0.0"
+#IP = "[::]"
+IP = "0.0.0.0"
 #Windows port
-PORT = "50051"
+#PORT = "50051"
 #Docker port
-#PORT = "8080"
-FILE = "log.txt"
+PORT = "8080"
+FILE = "./Server/log.txt"
 EVENTS = []
 
 
@@ -58,12 +58,12 @@ class ChatDB ():
             print("[ERROR] Algo salio mal, al intentar registrar el mensaje: "+ str(Message)+" entre los clientes :"+str(ClientId)+" -- "+str(SecondId))
             return
 
-        Data = "{0}#{1}".format(str(IdMessage),str(Message))
+        Data = "#".join([str(IdMessage), str(Message)])
 
         if ClientId in self.Clients.keys():
             if SecondId in self.Clients.keys():
                     self.Clients[SecondId].append(Data)          
-                    log.write(Data+"\n")
+                    log.write(Data)
                     print("[EXITO] El mensaje: "+ str(Message)+" entre los clientes :"+str(ClientId)+" -- "+str(SecondId)+ " Se registro correctame")
                     return Chat_pb2.Confirmacion(Tipo = 1, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "" )
             else:
