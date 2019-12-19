@@ -21,3 +21,13 @@ Cliente-2#Cliente-1#16-Dec-2019/22-57-16#Puta
 Cliente-1#Cliente-2#16-Dec-2019/23-08-06#Chupalo
 Cliente-2#Cliente-1#17-Dec-2019/15-19-07#Chuipalo ql
 Cliente-2#Cliente-1#17-Dec-2019/15-22-08#nuevo mensaje
+Cliente-2#Cliente-1#18-Dec-2019/13-28-15#la wea
+Cliente-2_Cliente-1_18-Dec-2019|13:46:03#hola cliente 1
+Cliente-1_Cliente-2_18-Dec-2019|14:01:49#chupalo cliente 2
+Cliente-1_Cliente-2_18-Dec-2019|14:03:00#mensaje nuevo
+Cliente-2_Cliente-1_18-Dec-2019|14:10:06#mensaje ql para cliente 1
+Cliente-2_Cliente-1_18-Dec-2019|14:15:44#mensaje de prubea un chillion
+Cliente-1_Cliente-2_18-Dec-2019|14:18:58#mensaje de la wea
+Cliente-2_Cliente-1_18-Dec-2019|14:19:51#funca?
+Cliente-1_Cliente-2_18-Dec-2019|14:22:55#mensaje de prueba
+Cliente-2_Cliente-1_18-Dec-2019|14:24:26#cyvgdasbdnai28u012i´rj{a}ñdasdasd231as-2d

@@ -13,8 +13,10 @@ from concurrent import futures
 
 IP = "[::]"
 #IP = "0.0.0.0"
-#PORT = "50051"
-PORT = "8080"
+#Windows port
+PORT = "50051"
+#Docker port
+#PORT = "8080"
 FILE = "log.txt"
 
 
@@ -52,31 +54,30 @@ class ChatDB ():
 
     
     def AddMessage(self, ClientId, SecondId, Message):
-        TimeStamp = datetime.now().strftime("%d-%b-%Y/%H-%M-%S")
+        TimeStamp = datetime.now().strftime("%d-%b-%Y|%H:%M:%S")
         #IdMensaje = IDEMISOR-IDRECEPTOR-TIMESTAMP
-        IdMessage = str(ClientId)+"#"+str(SecondId)+"#"+str(TimeStamp)
+        IdMessage = str(ClientId)+"_"+str(SecondId)+"_"+str(TimeStamp)
         try:
             log = open(FILE,"a")
         except IOError:
             print("[ERROR] Algo salio mal, al intentar registrar el mensaje: "+ str(Message)+" entre los clientes :"+str(ClientId)+" -- "+str(SecondId))
             return
 
-        Data = "{0}#{1}\n".format(IdMessage,str(Message))
+        Data = "{0}#{1}".format(str(IdMessage),str(Message))
 
         if ClientId in self.Clients.keys():
             if SecondId in self.Clients.keys():
                     self.Clients[SecondId].append(Data)          
-                    log.write(Data)
+                    log.write(Data+"\n")
                     print("[EXITO] El mensaje: "+ str(Message)+" entre los clientes :"+str(ClientId)+" -- "+str(SecondId)+ " Se registro correctame")
                     return Chat_pb2.Confirmacion(Tipo = 1, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "" )
-
             else:
                 print("El receptor {0} no se ecnuentra registrado".format(SecondId))
                 return Chat_pb2.Confirmacion(Tipo = 0, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "El receptor {0} no se ecnuentra registrado".format(SecondId) )
         else:
             print("El emisor {0} no se encuentra registrado".format(ClientId))
+            return Chat_pb2.Confirmacion(Tipo = 0, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "El emisor {0} no se encuentra registrado".format(ClientId))
         log.close()
-        return Chat_pb2.Confirmacion(Tipo = 0, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "El emisor {0} no se encuentra registrado".format(ClientId))
     
     def GetMessages(self,ClientId):
         temp = []
@@ -91,8 +92,14 @@ class ChatDB ():
         
         self.Clients[ClientId].clear()
         for m in temp:
-            IdEmisor, IdReceptor, TimeStamp, Mensaje = m.split(sep="#", maxsplit= 3 )
-            mensaje = Chat_pb2.MensajeCliente(IdPropietario = IdEmisor, IdDestinatario = IdReceptor, IdMensaje = "#".join([IdEmisor,IdReceptor, TimeStamp]), Mensaje = Mensaje, Error = "" )
+            IdMensaje, Mensaje = m.split(sep="#", maxsplit=1)
+            IdEmisor,IdReceptor, TimeStamp = IdMensaje.split(sep="_", maxsplit = 2)
+
+            #IdEmisor, IdReceptor, TimeStamp, Mensaje = m.split(sep="#", maxsplit= 3 )
+
+            #mensaje = Chat_pb2.MensajeCliente(IdPropietario = IdEmisor, IdDestinatario = IdReceptor, IdMensaje = "#".join([IdEmisor,IdReceptor, TimeStamp]), Mensaje = Mensaje, Error = "" )
+            mensaje = Chat_pb2.MensajeCliente(IdPropietario = IdEmisor, IdDestinatario = IdReceptor, IdMensaje = IdMensaje,
+            TimeStamp = TimeStamp, Mensaje = Mensaje, Error = "" )
             yield mensaje
 
         
@@ -126,6 +133,10 @@ class ChatServicer (Chat_pb2_grpc.ChatServicer):
     def DespachoMensajes(self, request, context):
         while True:
             return self.Directorio.GetMessages(request.IdCliente)
+    def Menu(self):
+        option = 0
+        while option != 4:
+            print("--------------------------------------------\nServidor {0}\n\nSeleccione una opcion:\n1) Revisar eventos del servidor\n2) Ver clientes activos.\n3) Ver mensajes almacenados\n4) Salir.\n--------------------------------------------\n".format(self.ServerId))
 
 
 

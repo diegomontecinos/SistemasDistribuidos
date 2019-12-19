@@ -18,7 +18,6 @@ services:
     tty: true
     command: bash -c "python3 -m grpc_tools.protoc -I ./Server --python_out=./Server/app --grpc_python_out=./Server/app ./Server/Chat.proto && python3 Server/app/Server.py"
     
-
   cliente:
     build: ./Generic_Client
     environment:

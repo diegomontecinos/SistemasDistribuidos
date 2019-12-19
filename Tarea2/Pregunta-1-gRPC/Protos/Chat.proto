@@ -57,8 +57,9 @@ message MensajeCliente {
     string IdPropietario = 1;
     string IdDestinatario = 2;
     string IdMensaje = 3;
-    string Mensaje = 4;
-    string Error = 5;
+    string TimeStamp = 4;
+    string Mensaje = 5;
+    string Error = 6;
 
 }
 
