@@ -29,7 +29,7 @@ class Servidor():
         self.channel.basic_consume(queue='cola_IDS', on_message_callback=self.handShake, auto_ack=True) #se ejecuta al recibir una request y manda una respuesta
         threading.Thread(target=self.escuchar(),daemon = True).start()#no bloque el codigo
         
-        
+         
 
     def handShake(self,ch, method, props, body):#on_request
 

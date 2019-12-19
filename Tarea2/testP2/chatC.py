@@ -43,7 +43,7 @@ class Consumer():
             body=str(n))
         while self.response is None:
             self.connection.process_data_events()
-        return (self.response)
+        return (self.response) 
 
 
 if __name__ == '__main__':
