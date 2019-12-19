@@ -70,6 +70,7 @@ IdCliente:
 
 message Consulta {
     string IdCliente = 1;
+    string Tipo = 2;
 }
 
 /*

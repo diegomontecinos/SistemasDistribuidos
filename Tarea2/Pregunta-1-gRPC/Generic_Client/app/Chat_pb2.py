@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='ChatRPC',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\nChat.proto\x12\x07\x43hatRPC\"M\n\x07Saludos\x12\x0c\n\x04Tipo\x18\x01 \x01(\x05\x12\x11\n\tIdCliente\x18\x02 \x01(\t\x12\x12\n\nIdServidor\x18\x03 \x01(\t\x12\r\n\x05\x45rror\x18\x04 \x01(\t\"\x85\x01\n\x0eMensajeCliente\x12\x15\n\rIdPropietario\x18\x01 \x01(\t\x12\x16\n\x0eIdDestinatario\x18\x02 \x01(\t\x12\x11\n\tIdMensaje\x18\x03 \x01(\t\x12\x11\n\tTimeStamp\x18\x04 \x01(\t\x12\x0f\n\x07Mensaje\x18\x05 \x01(\t\x12\r\n\x05\x45rror\x18\x06 \x01(\t\"\x1d\n\x08\x43onsulta\x12\x11\n\tIdCliente\x18\x01 \x01(\t\"U\n\x0c\x43onfirmacion\x12\x0c\n\x04Tipo\x18\x01 \x01(\x05\x12\x15\n\rIdPropietario\x18\x02 \x01(\t\x12\x11\n\tIdMensaje\x18\x03 \x01(\t\x12\r\n\x05\x45rror\x18\x04 \x01(\t2\xbe\x01\n\x04\x43hat\x12.\n\x06Saludo\x12\x10.ChatRPC.Saludos\x1a\x10.ChatRPC.Saludos\"\x00\x12\x42\n\x0e\x45nvioSolicitud\x12\x17.ChatRPC.MensajeCliente\x1a\x15.ChatRPC.Confirmacion\"\x00\x12\x42\n\x10\x44\x65spachoMensajes\x12\x11.ChatRPC.Consulta\x1a\x17.ChatRPC.MensajeCliente\"\x00\x30\x01\x62\x06proto3')
+  serialized_pb=_b('\n\nChat.proto\x12\x07\x43hatRPC\"M\n\x07Saludos\x12\x0c\n\x04Tipo\x18\x01 \x01(\x05\x12\x11\n\tIdCliente\x18\x02 \x01(\t\x12\x12\n\nIdServidor\x18\x03 \x01(\t\x12\r\n\x05\x45rror\x18\x04 \x01(\t\"\x85\x01\n\x0eMensajeCliente\x12\x15\n\rIdPropietario\x18\x01 \x01(\t\x12\x16\n\x0eIdDestinatario\x18\x02 \x01(\t\x12\x11\n\tIdMensaje\x18\x03 \x01(\t\x12\x11\n\tTimeStamp\x18\x04 \x01(\t\x12\x0f\n\x07Mensaje\x18\x05 \x01(\t\x12\r\n\x05\x45rror\x18\x06 \x01(\t\"+\n\x08\x43onsulta\x12\x11\n\tIdCliente\x18\x01 \x01(\t\x12\x0c\n\x04Tipo\x18\x02 \x01(\t\"U\n\x0c\x43onfirmacion\x12\x0c\n\x04Tipo\x18\x01 \x01(\x05\x12\x15\n\rIdPropietario\x18\x02 \x01(\t\x12\x11\n\tIdMensaje\x18\x03 \x01(\t\x12\r\n\x05\x45rror\x18\x04 \x01(\t2\xbe\x01\n\x04\x43hat\x12.\n\x06Saludo\x12\x10.ChatRPC.Saludos\x1a\x10.ChatRPC.Saludos\"\x00\x12\x42\n\x0e\x45nvioSolicitud\x12\x17.ChatRPC.MensajeCliente\x1a\x15.ChatRPC.Confirmacion\"\x00\x12\x42\n\x10\x44\x65spachoMensajes\x12\x11.ChatRPC.Consulta\x1a\x17.ChatRPC.MensajeCliente\"\x00\x30\x01\x62\x06proto3')
 )
 
 
@@ -158,6 +158,13 @@ _CONSULTA = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='Tipo', full_name='ChatRPC.Consulta.Tipo', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -171,7 +178,7 @@ _CONSULTA = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=238,
-  serialized_end=267,
+  serialized_end=281,
 )
 
 
@@ -222,8 +229,8 @@ _CONFIRMACION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=269,
-  serialized_end=354,
+  serialized_start=283,
+  serialized_end=368,
 )
 
 DESCRIPTOR.message_types_by_name['Saludos'] = _SALUDOS
@@ -268,8 +275,8 @@ _CHAT = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=357,
-  serialized_end=547,
+  serialized_start=371,
+  serialized_end=561,
   methods=[
   _descriptor.MethodDescriptor(
     name='Saludo',

@@ -30,9 +30,7 @@ class Client:
         #Crear grpc Channel y stub
       
         channel = grpc.insecure_channel(IP+":"+PORT)
-        #que hace esta wea#grpc.channel_ready_future(channel).result()
         self.stub = Chat_pb2_grpc.ChatStub(channel)
-
         response = self.stub.Saludo(Chat_pb2.Saludos(Tipo = 0, IdCliente = "", IdServidor = "", Error = "" ))
 
         if response.Tipo == 1:
@@ -57,10 +55,25 @@ class Client:
         
     def EsperaMensajes(self):
         #print("Servicio de espera de mensajes iniciado")
-        for element in self.stub.DespachoMensajes(Chat_pb2.Consulta(IdCliente = self.Id)):
+        for element in self.stub.DespachoMensajes(Chat_pb2.Consulta(IdCliente = self.Id, Tipo = str("r"))):
             #print("Mensaje recibido :\n"+element.Mensaje)
             Mensaje = " ".join([element.TimeStamp, element.IdPropietario, element.Mensaje])
             self.Mensajes.append(Mensaje)
+    def EsperaHistorial(self):
+        temp = []
+        #print("Servicio de espera de mensajes iniciado")
+        for element in self.stub.DespachoMensajes(Chat_pb2.Consulta(IdCliente = self.Id, Tipo = str("e"))):
+            #print("Mensaje recibido :\n"+element.Mensaje)
+            Mensaje = " ".join([element.TimeStamp, element.IdDestinatario, element.Mensaje])
+            temp.append(Mensaje)
+        return temp
+    
+    def EsperaClientes(self):
+        temp = []
+        for element in self.stub.DespachoMensajes(Chat_pb2.Consulta(IdCliente = self.Id, Tipo = str("c"))):
+            temp.append(element.Mensaje)
+        return temp
+
     
     def GetId(self):
         return str(self.Id)
@@ -69,12 +82,24 @@ class Client:
 
     def Menu(self):
         option = 0
-        while option != 3:
-            print("--------------------------------------------\nServidor {0} Usuario {1}\n\nSeleccione una opcion:\n1) Enviar un mensaje\n2) Ver mensajes recibidos.\n3) Salir.\n--------------------------------------------\n".format(Cliente.GetIdServer(), Cliente.GetId()))
+        while option != 4:
+            print("--------------------------------------------\nServidor {0} Usuario {1}\n\nSeleccione una opcion:\n1) Ver clientes conectados\n2) Enviar un mensaje\n3) Ver mensajes recibidos.\n4) Ver mensajes enviados\n5) Salir.\n--------------------------------------------\n".format(Cliente.GetIdServer(), Cliente.GetId()))
             option = str(input("Opcion: "))
             if option == str(1):
-                self.EnvioSolicitud()
+                clientes = self.EsperaClientes()
+                if not clientes:
+                    print("Eres el unico cliente conectado ")
+                else:
+                    print("---Listado Clientes-----\n")
+                    i = 1
+                    for cliente in clientes:
+                        print("{0}) {1}".format(i, cliente))
+                        i=i+1
+                    print("-------------------------------")
+
             elif option == str(2):
+                self.EnvioSolicitud()
+            elif option == str(3):
                 self.EsperaMensajes()
                 if not self.Mensajes:
                     print("Aun no hay mensajes")
@@ -82,8 +107,15 @@ class Client:
                     print("--------------------------------------------\nMensajes recibidos:\n----fecha y hora----|--Emisor--|----Mensaje----\n")
                     for mensaje in self.Mensajes:
                         print(mensaje)
-                    "--------------------------------------------\n"
-            elif option == str(3):
+                    print("--------------------------------------------\n")
+            elif option == str(4):
+                historial = self.EsperaHistorial()
+                print("--------------------------------------------\nMensajes enviados:\n----fecha y hora----|--Receptor--|----Mensaje----\n")
+                for mensaje in historial:
+                    print(mensaje)
+                print("--------------------------------------------\n")
+
+            elif option == str(5):
                 break
             else:
                 print("Ha seleccionado una opcion no valida, intentelo nuevamente")
