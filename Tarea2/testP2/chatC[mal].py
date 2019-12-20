@@ -12,7 +12,15 @@ import threading
 # texto + timestamp
 # cliente-X#Cliente-Y#timestamp#texto
 
-class PublisherC():
+#{tipo:[0123],emisor:Cliente-X,receptor:Cliente-Y,mensaje:mensaje,tiempo:timestamp}
+# tipo 0: "saludo" para obtener ID 
+# tipo 1: enviar mensaje
+# tipo 2: obtener listado de cliente
+# tipo 3: mis mensajes
+
+class Client(): #ex PublisherC
+
+    ####publisher####
 
     #------------------------------------------------------------------------------------------
     #constructor... se enlaza a la cola de saludos y crea la cola a la que el servidor responde
@@ -40,11 +48,12 @@ class PublisherC():
             self.response = body.decode()
             self.ID = self.response
             #no se si llamar acá al construcrtor del consumer para crear la cola o dejarlo en el 'main'
+            self.PedirMEnsajes() #crear la cola correspondiente
 
     #-------------------------------------------------------------------
     # manda una solicitud RPC y bloquea hasta que recibe una respuesta
     #-------------------------------------------------------------------
-    def ID(self, n):
+    def getID(self):
         self.response = None
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(
@@ -54,7 +63,7 @@ class PublisherC():
                 reply_to=self.callback_queue,
                 correlation_id=self.corr_id,
             ),
-            body=str(n))
+            body=str(0))
         while self.response is None:
             self.connection.process_data_events()
         return (self.response) 
@@ -74,7 +83,38 @@ class PublisherC():
         #print(" [x] Sent ",MSG)
         connection.close ()
 
+    ####consumer####
 
+    #-----------------------------------------
+    #crea la cola correspondiente a cliente-ID
+    #------------------------------------------
+    def PedirMEnsajes(self):
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host='localhost')
+        )
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue=str(self.ID))
+        
+        self.channel.basic_consume(queue=str(self.ID),on_message_callback=self.GuardarMSG,auto_ack=True)
+        threading.Thread(target=self.Escuchar(),daemon=True).start()
+
+    #------------------------------- REVISAR
+    #guarda los mensajes que llegan
+    #-------------------------------
+    def GuardarMSG(self, ch, method, props, body):
+        mensaje = body.decode().split('#')#['cliente-x','cliente-y','tiempo', 'menaje'] el body cambió!!!!
+        self.ListMSG.append(str(mensaje[-1]))
+
+    #-----------------------
+    # saca cosas de la cola
+    #-----------------------
+    def Escuchar(self):
+        #while True:
+        print(" [x] Awaiting mensajes")
+        self.channel.start_consuming()
+
+
+'''
 class ConsumerC():
     
     #------------
@@ -111,45 +151,10 @@ class ConsumerC():
         #while True:
         print(" [x] Awaiting mensajes")
         self.channel.start_consuming()
-
-
-
-
-        
-
-if __name__ == '__main__':
-    cliente = PublisherC()
-    print(" [x] Requesting ID")
-    id = cliente.ID(0)
-    print(" [.] Got " , id)
-
 '''
-#LOGGER = logging.getLogger(__name__)
-class Consumer():
-    def __init__(self, ):
-        self.conexiones = 0
-        self.consuming = False
-        self.message = ''
-        
-    def connectar(self):
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='localhost')
-        )
-        self.channel = self.connection.channel()
-
-    def callback(self, ch, method, props, body):
-        self.message = body.decode()
-
-
-class Publisher():
-    def __init__(self):
-        super().__init__()
-
-class Client():
-    def __init__(self):
-        self.consumidor = Consumer()
-        self.publicador = Publisher()
 
 if __name__ == '__main__':
     cliente = Client()
-    '''
+    print(" [x] Requesting ID")
+    id = cliente.getID()
+    print(" [.] Got " , id)
