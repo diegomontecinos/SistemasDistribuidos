@@ -48,19 +48,17 @@ class ServerChat():
     #recibe el mensaje y dependiendo de si es un saludo o un mensaje, llama a la funcion que corresponde
     def RecibirMSG(self, ch, method, prop, body):
         print("[X] llega ",body.decode())
-        emisorRAW,receptorRAW,timeRAW,mensajeRAW,colaRAW,tipoRAW = body.decode().strip("{}").split(",")
+        emisorRAW,receptorRAW,timeRAW,mensajeRAW,colaRAW = body.decode().strip("{}").split(",")
         emisor = emisorRAW.split(";")[1]
         receptor = receptorRAW.split(";")[1]
         time = timeRAW.split(";")[1]
         mensaje = mensajeRAW.split(";")[1]
         cola = colaRAW.split(";")[1]
-        tipo = tipoRAW.split(";")[1]
         print('emisor ',emisor)
         print('receptor ',receptor)
         print('time ',time)
         print('mensaje ',mensaje)
         print('cola ',cola)
-        print('tipo ', tipo)
 
         if 'Cliente' not in emisor:#no tiene ID
             self.AddClient(cola)
@@ -87,14 +85,13 @@ class ServerChat():
         connection.close()
 
     def EnviarMensaje(self, RAW):
-        print("[X] llega ", RAW)#.decode())
-        emisorRAW,receptorRAW,timeRAW,mensajeRAW,colaRAW,tipoRAW = RAW.strip("{}").split(",")
+        print("[X] llega ", RAW.decode())
+        emisorRAW,receptorRAW,timeRAW,mensajeRAW,colaRAW = RAW.strip("{}").split(",")
         emisor = emisorRAW.split(";")[1]
         receptor = receptorRAW.split(";")[1]
         time = timeRAW.split(";")[1]
         mensaje = mensajeRAW.split(";")[1]
         cola = colaRAW.split(";")[1]
-        tipo = tipoRAW.split(";")[1]
 
         MSG = emisor+'_'+time+': '+mensaje
 
@@ -108,13 +105,12 @@ class ServerChat():
         self.GuardarMSG(RAW)
 
     def GuardarMSG(self, RAW):
-        emisorRAW,receptorRAW,timeRAW,mensajeRAW,colaRAW,tipoRAW = RAW.strip("{}").split(",")
+        emisorRAW,receptorRAW,timeRAW,mensajeRAW,colaRAW = RAW.strip("{}").split(",")
         emisor = emisorRAW.split(";")[1]
         receptor = receptorRAW.split(";")[1]
         time = timeRAW.split(";")[1]
         mensaje = mensajeRAW.split(";")[1]
         cola = colaRAW.split(";")[1]
-        tipo = tipoRAW.split(";")[1]
 
         MSGtoWrite = emisor+'_'+receptor+'_'+time+'#'+mensaje
 
