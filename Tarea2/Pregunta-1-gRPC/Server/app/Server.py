@@ -58,7 +58,7 @@ class ChatDB ():
             print("[ERROR] Algo salio mal, al intentar registrar el mensaje: "+ str(Message)+" entre los clientes :"+str(ClientId)+" -- "+str(SecondId))
             return
 
-        Data = "#".join([str(IdMessage), str(Message)])
+        Data = "#".join([str(IdMessage), str(Message), "\n"])
 
         if ClientId in self.Clients.keys():
             if SecondId in self.Clients.keys():
@@ -73,7 +73,8 @@ class ChatDB ():
             print("El emisor {0} no se encuentra registrado".format(ClientId))
             return Chat_pb2.Confirmacion(Tipo = 0, IdPropietario=ClientId, IdMensaje = IdMessage, Error =  "El emisor {0} no se encuentra registrado".format(ClientId))
         log.close()
-    
+
+    #Mensajes que he recibido por ClienteId
     def GetMessages(self,ClientId):
         temp = []
         try:
@@ -92,6 +93,7 @@ class ChatDB ():
             mensaje = Chat_pb2.MensajeCliente(IdPropietario = IdEmisor, IdDestinatario = IdReceptor, IdMensaje = IdMensaje,
             TimeStamp = TimeStamp, Mensaje = Mensaje, Error = "" )
             yield mensaje
+    #Mensajes enviados por ClietntID
     def GetRecord(self, ClientId):
         temp = []
         try:
@@ -121,9 +123,9 @@ class ChatDB ():
         for linea in log:
             IdMensaje, Mensaje = linea.split(sep="#", maxsplit=1)
             IdEmisor,IdReceptor, TimeStamp = IdMensaje.split(sep="_", maxsplit = 2)
-            temp.append((IdEmisor,IdReceptor,IdMensaje, TimeStamp, Mensaje))
-        
+            temp.append((IdEmisor,IdReceptor,IdMensaje, TimeStamp, Mensaje)) 
         return temp
+
     def GetClients(self, ClientId):
         for client in self.Clients.keys():
             if client != ClientId:
@@ -140,7 +142,7 @@ class ChatServicer (Chat_pb2_grpc.ChatServicer):
         self.Directorio = ChatDB()
         self.ServerId = "S01"
         self.ClientNumber = 0
-        self.Events = []
+        #self.Events = []
         print("iniciando servicios")
         #threading.Thread(target= self.Menu()).start()
     
