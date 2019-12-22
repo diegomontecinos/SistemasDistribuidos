@@ -44,7 +44,7 @@ class ClientChat():
             channelQ.basic_consume(queue=str(QueueName),on_message_callback=self.LecturaId,auto_ack=True)
             channelQ.start_consuming()
         else:
-            channelQ.basic_consume(queue=str(QueueName), on_message_callback=self.ListenChat,auto_ack=True)
+            channelQ.basic_consume(queue=str(QueueName), on_message_callback=self.LecturaChat,auto_ack=True)
             channelQ.start_consuming()
 
     '''#crea cola temporal
@@ -92,8 +92,12 @@ class ClientChat():
         cola = colaRAW.split(";")[1]
         tipo = tipoRAW.split(";")[1]
 
-        MSG = emisor+'_'+time+': '+mensaje
-        self.BandejaEntrada.append(str(MSG))
+        if tipo == str(1):
+            print("Mensajes recibidos:")
+            print(mensaje)
+        
+        #MSG = emisor+'_'+time+': '+mensaje
+        #self.BandejaEntrada.append(str(MSG))
     
     '''def ListenChat(self):
         self.channel.start_consuming()'''
@@ -103,9 +107,10 @@ class ClientChat():
             print(MSG)
     
 
-    def EnviarMensaje(self,mensaje, receptor,tipo):
+    def EnviarMensaje(self, mensaje, receptor,tipo):
         tiempo = datetime.now().strftime("%d-%b-%Y|%H:%M:%S")
         MSG = '{emisor;'+str(self.IdCliente)+',receptor;'+receptor+',time;'+tiempo+',mensaje;'+mensaje+',cola;cola_MSG,tipo;'+tipo+'}'
+        print("[X] mando: ",MSG)
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='localhost')
         )
@@ -131,60 +136,67 @@ class ClientChat():
                 if 0:
                     print()
 '''
-
-
+# mensaje tipo 0: pedir ID
+# mensaje tipo 1: pedir usuarios conectados
+# mensaje tipo 2: enviar mensajes
+# mensaje tipo 3: pedir mensajes recibidos
+# mensaje tipo 4: pedir mensajes enviados
 
 if __name__ == '__main__':
     print('Cliente')
     cliente = ClientChat()
+    #ver opcion de reiniciar el thread si es que no llega el id
     hiloID = threading.Thread(target=cliente.crearCola,args=[cliente.name])
     hiloID.start()
     print('newID ', cliente.IdCliente)
     time.sleep(1)
     flag = True
-    while flag:
-        print("--------------------------------------------\nUsuario "+cliente.IdCliente+"\n\nSeleccione una opcion:\n1) Ver clientes conectados\n2) Enviar un mensaje\n3) Ver mensajes recibidos.\n4) Ver mensajes enviados\n5) Salir.\n--------------------------------------------\n")
-        opcion = str(input("Opcion: "))
+    if cliente.IdCliente != '':
+        hiloCola = threading.Thread(target=cliente.crearCola,args=[cliente.IdCliente])
+        hiloCola.start()
+        while flag:
+            print("--------------------------------------------\nUsuario "+cliente.IdCliente+"\n\nSeleccione una opcion:\n1) Ver clientes conectados\n2) Enviar un mensaje\n3) Ver mensajes recibidos.\n4) Ver mensajes enviados\n5) Salir.\n--------------------------------------------\n")
+            opcion = str(input("Opcion: "))
 
-        #clientes conectados
-        if opcion == str(1):
-            cliente.EnviarMensaje("necesito ver usuarios conectados","Server","2")
-            #en la recepcio, revisar si el mensaje es de tipo 2, printearlo
-        
-        #enviar mensaje
-        elif opcion == str(2):
-            receptor = input("ingrese el Id del destinatario: ")
-            mensaje = input("Ingrese un mensaje: ")
-            cliente.EnviarMensaje(mensaje,receptor,'3')
-        
-        #mensajes recibidos
-        elif opcion == str(3):
-            if not cliente.BandejaEntrada:
-                print("Aún no recibes mensajes")
+            #clientes conectados
+            if opcion == str(1):
+                cliente.EnviarMensaje("necesito ver usuarios conectados","Server","1")
+                #en la recepcion, revisar si el mensaje es de tipo 2, printearlo
+            
+            #enviar mensaje
+            elif opcion == str(2):
+                receptor = input("ingrese el Id del destinatario: ")
+                mensaje = input("Ingrese un mensaje: ")
+                cliente.EnviarMensaje(mensaje,receptor,'2')
+            
+            #mensajes recibidos
+            elif opcion == str(3):
+                if not cliente.BandejaEntrada:
+                    print("Aún no recibes mensajes")
+                else:
+                    for MSG in cliente.BandejaEntrada:
+                        print(MSG)
+                    print("------------------------------------------------")
+
+            #mensajes enviados
+            elif opcion == str(4):
+                if not cliente.BandejaSalida:
+                    print("Aún no mandas mensajes")
+                else:
+                    cliente.EnviarMensaje("necesito mis mensajes enviados","Server","4")
+                    print(0)
+                    ''' a lo pajero
+                    for MSG in cliente.BandejaSalida:
+                        print(MSG)
+                    print("------------------------------------------------")'''
+
+            #salir
+            elif opcion == str(5):
+                flag = False
+            
+            #opcion no válida
             else:
-                for MSG in cliente.BandejaEntrada:
-                    print(MSG)
-                print("------------------------------------------------")
-
-        #mensajes enviados
-        elif opcion == str(4):
-            if not cliente.BandejaSalida:
-                print("Aún no recibes mensajes")
-            else:
-                cliente.EnviarMensaje("necesito mis mensajes enviados","Server","4")
-                print(0)
-                ''' a lo pajero
-                for MSG in cliente.BandejaSalida:
-                    print(MSG)
-                print("------------------------------------------------")'''
-
-        #salir
-        elif opcion == str(5):
-            flag = False
-        
-        #opcion no válida
-        else:
-            print('opción no válida, intente nuevamente')
+                print('opción no válida, intente nuevamente')
             
     #matar hiloID
 
