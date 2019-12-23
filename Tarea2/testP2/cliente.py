@@ -5,8 +5,9 @@ import threading
 import random
 from datetime import datetime
 import time
+import ast
 
-# mensajes -> '{emisor;Cliente-0,receptor;[Cliente-X o Server],time;dd-mmm-yyy|hh:mm:ss,mensaje;MSG,COLA;colaNAme,tipo;N1}'
+# mensajes -> '{emisor;Cliente-0,receptor;[Cliente-X],time;dd-mmm-yyy|hh:mm:ss,mensaje;MSG,COLA;colaNAme,tipo;N1}'
 
 class ClientChat():
 
@@ -18,8 +19,16 @@ class ClientChat():
         self.BandejaEntrada = [] #cuando lee mensajes, guardarlos aca
         self.BandejaSalida = [] #cuando manda mensajes guardarlos aca
         print ('nombre fantasma ', self.name)
-        tiempo = datetime.now().strftime("%d-%b-%Y|%H:%M:%S")
-        mensaje = '{emisor;'+str(self.name)+',receptor;Server,time;'+tiempo+',mensaje;Nedd new ID,cola;'+str(self.name)+',tipo;0}'
+        #tiempo = datetime.now().strftime("%d-%b-%Y|%H:%M:%S")
+        #mensaje = '{emisor:'+str(self.name)+',receptor:Server,time:dd-mm-yyy,mensaje:Need ID,cola:'+str(self.name)+',tipo:0}'
+        
+        diccionarioMSG=dict()
+        diccionarioMSG['emisor'] =self.name
+        diccionarioMSG['receptor'] = self.name
+        diccionarioMSG['tiempo'] = ''
+        diccionarioMSG['mensaje'] = 'necesito Id'
+        diccionarioMSG['cola'] = self.name
+        diccionarioMSG['tipo'] = '0'
 
         #mandar peticion de ID
         connection = pika.BlockingConnection(
@@ -27,7 +36,7 @@ class ClientChat():
         )
         channel = connection.channel()
         channel.queue_declare(queue='cola_MSG')
-        channel.basic_publish(exchange='',routing_key='cola_MSG',body=str(mensaje))
+        channel.basic_publish(exchange='',routing_key='cola_MSG',body=str(diccionarioMSG))
         connection.close()
         #llamar a la función que crea la cola fantasma y que escuche
         print("llama a crear la cola ficticia")
@@ -40,12 +49,42 @@ class ClientChat():
         )
         channelQ = connectionQ.channel()
         channelQ.queue_declare(queue=str(QueueName))
-        if 'Cliente' not in QueueName:
+        '''if self.IdCliente == '':
             channelQ.basic_consume(queue=str(QueueName),on_message_callback=self.LecturaId,auto_ack=True)
             channelQ.start_consuming()
         else:
             channelQ.basic_consume(queue=str(QueueName), on_message_callback=self.LecturaChat,auto_ack=True)
-            channelQ.start_consuming()
+            channelQ.start_consuming()'''
+        channelQ.basic_consume(queue=str(QueueName), on_message_callback=self.Lectura,auto_ack=True)
+        channelQ.start_consuming()
+
+
+    def Lectura(self, ch, method, props, body):
+        print("Lectura [X] llega ",body.decode())
+        entra = ast.literal_eval(body.decode('utf-8'))
+        print(entra)
+        '''entra = body.decode()
+        print("lectura llega: ", entra)
+        emisorRAW, receptorRAW, tiempoRAW, mensajeRAW, colaRAW, tipoRAW = entra.strip("{}").split(",")
+        emisor = emisorRAW.split(";")[1]
+        receptor = receptorRAW.split(";")[1]
+        tiempo = tiempoRAW.split(";")[1]
+        mensaje = mensajeRAW.split(";")[1]
+        cola = colaRAW.split(";")[1]
+        tipo = tipoRAW.split(";")[1]
+        #print(emisor)
+        #print(receptor)
+        #print(mensaje)
+        #print(tipo)'''
+        if entra['tipo'] == str(0):
+            self.IdCliente = entra['mensaje']
+        elif entra['tipo'] == str(1):
+            print("usuarios creados: ",entra['mensaje'])
+        elif entra['tipo'] == str(3):
+            print('mensajes recibidos: ')
+            print(entra['mensaje'])
+
+
 
     '''#crea cola temporal
     def FisrtQueue(self):
@@ -62,10 +101,12 @@ class ClientChat():
         threading.Thread(target=self.FisrtListen(),daemon=True).start()'''
 
     def LecturaId(self, ch ,method, props, body):
-        print("[X] llega ", body.decode())
+        print("LId[X] llega ", body.decode())
         self.IdCliente = body.decode()    
         #self.RealQueue()
         #llamar a la cola real
+        #'{emisor;Cliente-0,receptor;[Cliente-X],time;dd-mmm-yyy|hh:mm:ss,mensaje;MSG,COLA;colaNAme,tipo;N1}'
+         
 
     '''def FisrtListen(self):
         self.channelGhost.start_consuming()
@@ -84,6 +125,7 @@ class ClientChat():
         threading.Thread(target=self.ListenChat(),daemon=True).start()'''
 
     def LecturaChat(self, ch, method, props, body):
+        print("[X] llega ", body.decode())
         emisorRAW,receptorRAW,timeRAW,mensajeRAW,colaRAW,tipoRAW= body.decode().strip("{}").split(",")
         emisor = emisorRAW.split(";")[1]
         receptor = receptorRAW.split(";")[1]
@@ -95,6 +137,7 @@ class ClientChat():
         if tipo == str(1):
             print("Mensajes recibidos:")
             print(mensaje)
+            
         
         #MSG = emisor+'_'+time+': '+mensaje
         #self.BandejaEntrada.append(str(MSG))
@@ -109,14 +152,21 @@ class ClientChat():
 
     def EnviarMensaje(self, mensaje, receptor,tipo):
         tiempo = datetime.now().strftime("%d-%b-%Y|%H:%M:%S")
-        MSG = '{emisor;'+str(self.IdCliente)+',receptor;'+receptor+',time;'+tiempo+',mensaje;'+mensaje+',cola;cola_MSG,tipo;'+tipo+'}'
+        diccionarioMSG=dict()
+        diccionarioMSG['emisor'] =self.IdCliente
+        diccionarioMSG['receptor'] = receptor
+        diccionarioMSG['tiempo'] = tiempo
+        diccionarioMSG['mensaje'] = mensaje
+        diccionarioMSG['cola'] = receptor
+        diccionarioMSG['tipo'] = tipo
+        MSG = str(diccionarioMSG)
         print("[X] mando: ",MSG)
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='localhost')
         )
         channel = connection.channel()
         channel.queue_declare(queue='cola_MSG')
-        channel.basic_publish(exchange='',routing_key='cola_MSG',body=str(MSG))
+        channel.basic_publish(exchange='',routing_key='cola_MSG',body=MSG)
         connection.close()
 
 
@@ -149,25 +199,29 @@ if __name__ == '__main__':
     hiloID = threading.Thread(target=cliente.crearCola,args=[cliente.name])
     hiloID.start()
     print('newID ', cliente.IdCliente)
-    time.sleep(1)
+    time.sleep(0.5)
     flag = True
     if cliente.IdCliente != '':
-        hiloCola = threading.Thread(target=cliente.crearCola,args=[cliente.IdCliente])
-        hiloCola.start()
+        #hiloCola = threading.Thread(target=cliente.crearCola,args=[cliente.IdCliente])
+        #hiloCola.start()
         while flag:
+            print("mi ID: ", cliente.IdCliente)
             print("--------------------------------------------\nUsuario "+cliente.IdCliente+"\n\nSeleccione una opcion:\n1) Ver clientes conectados\n2) Enviar un mensaje\n3) Ver mensajes recibidos.\n4) Ver mensajes enviados\n5) Salir.\n--------------------------------------------\n")
             opcion = str(input("Opcion: "))
 
             #clientes conectados
             if opcion == str(1):
-                cliente.EnviarMensaje("necesito ver usuarios conectados","Server","1")
-                #en la recepcion, revisar si el mensaje es de tipo 2, printearlo
+                cliente.EnviarMensaje("necesito ver usuarios conectados",cliente.IdCliente,opcion)
+                #en la recepcion, revisar si el mensaje es de tipo 2, printearlo -> este ya no
+                #esperar un 1 segundo, para que llegue el mensaje, lo guarde en algun lado 
+                # y despues printear ese lado
+
             
             #enviar mensaje
             elif opcion == str(2):
                 receptor = input("ingrese el Id del destinatario: ")
                 mensaje = input("Ingrese un mensaje: ")
-                cliente.EnviarMensaje(mensaje,receptor,'2')
+                cliente.EnviarMensaje(mensaje,receptor,opcion)
             
             #mensajes recibidos
             elif opcion == str(3):
@@ -177,6 +231,8 @@ if __name__ == '__main__':
                     for MSG in cliente.BandejaEntrada:
                         print(MSG)
                     print("------------------------------------------------")
+
+                cliente.EnviarMensaje("necesito leer mensajes",cliente.IdCliente,opcion)
 
             #mensajes enviados
             elif opcion == str(4):
