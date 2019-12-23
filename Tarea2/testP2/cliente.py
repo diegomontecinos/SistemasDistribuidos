@@ -83,6 +83,9 @@ class ClientChat():
         elif entra['tipo'] == str(3):
             print('mensajes recibidos: ')
             print(entra['mensaje'])
+        elif entra['tipo'] == str(4):
+            print('mensajes enviados: ')
+            print(entra['mensaje'])
 
 
 
@@ -225,26 +228,27 @@ if __name__ == '__main__':
             
             #mensajes recibidos
             elif opcion == str(3):
-                if not cliente.BandejaEntrada:
+                '''if not cliente.BandejaEntrada:
                     print("Aún no recibes mensajes")
                 else:
                     for MSG in cliente.BandejaEntrada:
                         print(MSG)
-                    print("------------------------------------------------")
+                    print("------------------------------------------------")'''
 
                 cliente.EnviarMensaje("necesito leer mensajes",cliente.IdCliente,opcion)
 
             #mensajes enviados
             elif opcion == str(4):
-                if not cliente.BandejaSalida:
+                '''if not cliente.BandejaSalida:
                     print("Aún no mandas mensajes")
                 else:
                     cliente.EnviarMensaje("necesito mis mensajes enviados","Server","4")
                     print(0)
-                    ''' a lo pajero
+                    # a lo pajero
                     for MSG in cliente.BandejaSalida:
                         print(MSG)
                     print("------------------------------------------------")'''
+                cliente.EnviarMensaje("necesito mis mensajes enviados",cliente.IdCliente,opcion)
 
             #salir
             elif opcion == str(5):

@@ -101,12 +101,16 @@ class ServerChat():
                 self.GuardarMSG(entra)# entra es un diccionario
         elif entra['tipo'] == str(3): #pedir mensajes recibidos... self.BandejaEntrada[]
             print('piden mensajes entrantes')
-            mensajes = self.ObtenerRecibidos(entra['emisor'])
+            mensajes = self.ObtenerRecibidos(entra['emisor'],entra['tipo'])
             MSG = self.ArmarDiccionarioMSG(entra['emisor'],entra['emisor'],entra['tiempo'],mensajes,entra['cola'],entra['tipo'])
             self.EnviarMensaje(MSG,entra['emisor'],entra['emisor'],entra['tipo'])
             #llamar a función enviar mensaje con cola y tipo 3
         elif entra['tipo'] == str(4): #pedir mensajes enviados...
             a=0
+            print('piden mensajes entrantes')
+            mensajes = self.ObtenerRecibidos(entra['emisor'],entra['tipo'])
+            MSG = self.ArmarDiccionarioMSG(entra['emisor'],entra['emisor'],entra['tiempo'],mensajes,entra['cola'],entra['tipo'])
+            self.EnviarMensaje(MSG,entra['emisor'],entra['emisor'],entra['tipo'])
             #crear una funcion que lea el log.txt y saque los mensajes de usuario
 
     #retorna los clientes
@@ -117,12 +121,17 @@ class ServerChat():
                 listaUsuarios = listaUsuarios+user+' '
         return listaUsuarios
 
-    def ObtenerRecibidos(self, cliente):
-        print('recibidos consultados ',self.BandejaEntrada)
+    def ObtenerRecibidos(self, cliente, tipo):
+        #print('recibidos consultados ',self.BandejaEntrada)
         mensajesRecibidos = ''
-        for mensaje in self.BandejaEntrada[cliente]:
-            print('mensaje: ', mensaje)
-            mensajesRecibidos = mensajesRecibidos+mensaje+"\n"
+        if tipo == str(3):
+            for mensaje in self.BandejaEntrada[cliente]:
+                print('mensaje: ', mensaje)
+                mensajesRecibidos = mensajesRecibidos+mensaje+"\n"
+        elif tipo == str(4):
+            for mensaje in self.BandejaSalida[cliente]:
+                print('mensaje: ', mensaje)
+                mensajesRecibidos = mensajesRecibidos+mensaje+"\n"
         return mensajesRecibidos
 
 
