@@ -1,0 +1,5 @@
+Cliente-2_Cliente-1_24-Dec-2019|16:54:27#Saludos 1
+Cliente-2_Cliente-1_24-Dec-2019|16:54:39#feliz navidad
+Cliente-2_Cliente-1_24-Dec-2019|16:54:50#soy el 2
+Cliente-3_Cliente-2_24-Dec-2019|16:55:12#saludos 2, soy el 3
+Cliente-3_Cliente-1_24-Dec-2019|16:56:05#wena wena 3
