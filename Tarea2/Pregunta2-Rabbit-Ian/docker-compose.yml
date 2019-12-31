@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+
+  servidor:
+    container_name: servidor
+    build: ./Server
+    environment:
+      - DEBUG
+    network_mode: host    
+    ports:
+      - 8080:8080
+    expose: 
+      - 8080
+    volumes:
+      - ./Server:/Server/
+    stdin_open: true
+    tty: true
+    command: bash -c "python3 -m grpc_tools.protoc -I ./Server --python_out=./Server/app --grpc_python_out=./Server/app ./Server/Chat.proto && python3 Server/app/Server.py"
+    
+  cliente:
+    build: ./Generic_Client
+    environment:
+      - DEBUG
+    network_mode: host
+    ports: 
+      - 9000-10000:9000
+    volumes:
+      - ./Generic_Client:/Cliente/
+    stdin_open: true
+    tty: true
+    command: bash -c "python3 -m grpc_tools.protoc -I ./Cliente --python_out=./Cliente/app --grpc_python_out=./Cliente/app ./Cliente/Chat.proto &&  python3 Cliente/app/Cliente.py"
+    depends_on: 
+      - servidor
