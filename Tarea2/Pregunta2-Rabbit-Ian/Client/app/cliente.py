@@ -29,7 +29,7 @@ class ClientChat():
         diccionarioMSG['tipo'] = '0'
 
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='localhost')
+            pika.ConnectionParameters(host='0.0.0.0')
         )
         channel = connection.channel()
         channel.queue_declare(queue='cola_MSG')

@@ -1,34 +1,35 @@
 version: '3.7'
-
 services:
-
   servidor:
-    container_name: servidor
     build: ./Server
     environment:
       - DEBUG
     network_mode: host    
-    ports:
-      - 8080:8080
     expose: 
-      - 8080
+      - 4369
+      - 5671
+      - 5672
+      - 25672
     volumes:
       - ./Server:/Server/
     stdin_open: true
     tty: true
-    command: bash -c "python3 -m grpc_tools.protoc -I ./Server --python_out=./Server/app --grpc_python_out=./Server/app ./Server/Chat.proto && python3 Server/app/Server.py"
+    command: bash -c "sudo service rabbitmq-server start && python3 Server/app/servidor.py"
     
   cliente:
-    build: ./Generic_Client
+    build: ./Client
     environment:
       - DEBUG
     network_mode: host
-    ports: 
-      - 9000-10000:9000
+    expose:
+      - 4369
+      - 5671
+      - 5672
+      - 25672
     volumes:
-      - ./Generic_Client:/Cliente/
+      - ./Client:/Cliente/
     stdin_open: true
     tty: true
-    command: bash -c "python3 -m grpc_tools.protoc -I ./Cliente --python_out=./Cliente/app --grpc_python_out=./Cliente/app ./Cliente/Chat.proto &&  python3 Cliente/app/Cliente.py"
+    command: bash -c "sleep 10 && python3 Cliente/app/cliente.py"
     depends_on: 
       - servidor
