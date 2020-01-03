@@ -58,7 +58,7 @@ docker stop $(docker ps -a -q)
         |    |-Chat.proto
         |-Server
         |    |-app
-        |    |    -Server.py    --->> Código python del cliente
+        |       |-Server.py    --->> Código python del cliente
         |    |-Chat.proto       --->> Definición de servicios Protocol Bufffer
         |    |-Dockerfile       --->> Dockerfile container del servidor
         |    |-requirements.txt --->> Librerias requeridos por el servidor
