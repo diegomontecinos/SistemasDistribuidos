@@ -28,13 +28,17 @@ docker attach "Nombre del contenedor"
 ```
 Con esto se genera la coneccion al cliente y queda en estado de espera de ordenes, se apreta enter y se desplegara el menu donde se indica que opciones disponibles existen.
 
-Seleccione una opcion:
+Seleccione una opcion:  
     1) Ver clientes conectados.  
     2) Enviar un mensaje.  
     3) Ver mensajes recibidos.  
     4) Ver mensajes enviados.  
     5) Salir.  
+- Para ver los nombres de los contenedores activos utilizar
 
+```console
+docker ps
+```
 
 - Para detener todos los contenedores que se encuentran activos, se puede utlizar el siguiente comando.
 ```console
