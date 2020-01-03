@@ -12,7 +12,7 @@ import ast
 
 #crear diccionario {fantasma: ID real}
 
-FILE = 'log.txt'
+FILE = './Server/log.txt'
 
 class ServerChat():
     
@@ -123,7 +123,6 @@ class ServerChat():
         channel = connection.channel()
         channel.basic_publish(exchange='',routing_key=str(cola),body=str(diccionarioMSG))
         connection.close()
-        print("agregue a "+cola+"como: "+NewID)
 
     def EnviarMensaje(self, RAW, emisor, receptor,codigo):#'{e,r,t,M,c,t}'
         MSG = RAW

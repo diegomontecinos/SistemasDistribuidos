@@ -52,7 +52,7 @@ class ClientChat():
         
         if entra['tipo'] == str(0):
             self.IdCliente = entra['mensaje']
-            print("me llega "+entra['mensaje']+"como Id")
+           
         elif entra['tipo'] == str(1):
             self.MensajesDeEntrada = entra['mensaje']
 
@@ -73,7 +73,7 @@ class ClientChat():
         diccionarioMSG['cola'] = receptor
         diccionarioMSG['tipo'] = tipo
         MSG = str(diccionarioMSG)
-        #print("[X] mando: ",MSG)
+
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(host='localhost')
         )
