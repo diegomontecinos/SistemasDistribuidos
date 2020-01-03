@@ -131,6 +131,7 @@ if __name__ == "__main__":
     while cliente.Id == cliente.NombreCola:
         time.sleep(1)
     option = 0
+    entrada = input("Presione una tecla para continuar")
     while option != 5:
         print("--------------------------------------------\nServidor {0} Usuario {1}\n\nSeleccione una opcion:\n1) Ver clientes conectados\n2) Enviar un mensaje\n3) Ver mensajes recibidos.\n4) Ver mensajes enviados\n5) Salir.\n--------------------------------------------\n".format(cliente.IdServer, cliente.Id))
         option = str(input("Opcion: "))
