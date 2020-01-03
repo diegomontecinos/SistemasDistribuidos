@@ -26,13 +26,13 @@ class ServerChat():
 
         try:
             file = open(FILE,"r")
-            print("Ya existe un archivo log")
+            #print("Ya existe un archivo log")
             file.close()
         except IOError:
             print("No se encontro un archivo log")
             try: 
                 file = open(FILE, "w")
-                print("Archivo log creado exitosamente")
+                #print("Archivo log creado exitosamente")
                 file.close()
             except IOError:
                 print("Ha ocurrido un error inesperado al crear el archivo log")
@@ -123,6 +123,7 @@ class ServerChat():
         channel = connection.channel()
         channel.basic_publish(exchange='',routing_key=str(cola),body=str(diccionarioMSG))
         connection.close()
+        print("agregué a "+cola+"como: "+NewID)
 
     def EnviarMensaje(self, RAW, emisor, receptor,codigo):#'{e,r,t,M,c,t}'
         MSG = RAW
