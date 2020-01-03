@@ -1,10 +1,13 @@
 # Readme Tarea 2 "Servicio de mensajeria"
 
 ### Ambiente de desarrollo:
-    Esta tarea se desarrollo y testeo en windows 10 Education, con la version 2.1.0.5 de docker desktop community se recomienda utilizar la misma configuracion para el correcto funcionamiento, sin embargo el desarrollo fue realizado con el objetivo de poder levantar la arquitectura en cualquier sistema compatible, aun que no se garantiza que este funcione correctamente.
+    Esta tarea se desarrollo y testeo en windows 10 Education, con la version 2.1.0.5 de docker desktop community se recomienda utilizar
+    la misma configuracion para el correcto funcionamiento, sin embargo el desarrollo fue realizado con el objetivo de poder levantar la
+    arquitectura en cualquier sistema compatible, aun que no se garantiza que este funcione correctamente.
 
 ### Informe de tarea
-    El archivo Informe_tarea_2_Montecinos_Mora.pdf contiene las comparaciones tecnicas entre ambas implementaciones y la recomendacion final.
+    El archivo Informe_tarea_2_Montecinos_Mora.pdf contiene las comparaciones tecnicas entre ambas implementaciones y la recomendacion 
+    final.
 
 ## Pregunta-1-gRPC
 ### Estructura de archivos.
