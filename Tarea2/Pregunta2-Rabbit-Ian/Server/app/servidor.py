@@ -123,7 +123,7 @@ class ServerChat():
         channel = connection.channel()
         channel.basic_publish(exchange='',routing_key=str(cola),body=str(diccionarioMSG))
         connection.close()
-        print("agregué a "+cola+"como: "+NewID)
+        print("agregue a "+cola+"como: "+NewID)
 
     def EnviarMensaje(self, RAW, emisor, receptor,codigo):#'{e,r,t,M,c,t}'
         MSG = RAW
