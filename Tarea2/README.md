@@ -11,22 +11,22 @@
     y la recomendación final.
 ### Instrucciones de uso
 
-- Iniciar el servicio de docker.
-- Segundo paso, crear las imagenes de containers
+- Primer paso iniciar el servicio de docker.
+- Segundo paso, crear las imágenes de contenedores
 ```console
-docker-compose buildd
+docker-compose build
 ```
-- Tercer paso, levantar la arquitectura utilizando los containers previamente creados. se puede cambiar
-el número de clientes a levantar mediante el comando scale, se recomienda utilizar 4 pero puede utilizarse cualquier numero mayor a 1. Este comando puede utilizarse para agregar más clientes en caliente, esto quiere decir que aunque ya se hayan iniciado 4 clientes se puede re ingresar el comando con un nuemero mayor y se agregaran nuevos clientes sin detener a los que ya se encuentran ejecutandose.
+- Tercer paso, levantar la arquitectura utilizando los contenedores previamente creados. se puede cambiar
+el número de clientes a levantar mediante el comando *scale*, se recomienda utilizar 4 pero puede utilizarse cualquier numero mayor a 1. Este comando puede utilizarse para agregar más clientes en caliente, esto quiere decir que aunque ya se hayan iniciado 4 clientes se puede re ingresar el comando con un nuemero mayor y se agregaran nuevos clientes sin detener a los que ya se encuentran ejecutandose.
 ```console
 docker-compose up --scale cliente=4
 ```
-- Cuarto paso, una vez los contenedores estan levantados y en ejecucion se debe abrir una consola para cada cliente donde se ingresaran los comandos y se mostraran los mensajes. Una vez ejecutados los contenedores quedan esperando que se precione enter para desplegar el menu. Por lo que una vez realizado el tercer paso se debe ejecutar el comando
+- Cuarto paso, una vez los contenedores estan levantados y en ejecución se debe abrir una consola para cada cliente donde se ingresarán los comandos y se mostraran los mensajes. Una vez ejecutados los contenedores quedan esperando que se precione enter para desplegar el menú. Por lo que una vez realizado el tercer paso se debe ejecutar el comando
 
 ```console
 docker attach "Nombre del contenedor"
 ```
-Con esto se genera la coneccion al cliente y queda en estado de espera de ordenes, se apreta enter y se desplegara el menu donde se indica que opciones disponibles existen.
+Con esto se genera la conexión al cliente y queda en estado de espera de órdenes, se apreta enter y se desplegará el menú donde se indica que opciones disponibles existen.
 
 Seleccione una opcion:  
     1) Ver clientes conectados.  
@@ -34,6 +34,9 @@ Seleccione una opcion:
     3) Ver mensajes recibidos.  
     4) Ver mensajes enviados.  
     5) Salir.  
+    
+**Existe la posibilidad de que el menu no se despligue dado que la consola donde se ejecuto *docker up* queda pegada, este problema no lo pudimos solucionar ya que corresponde a docker al momento de levantar la arquitectura, es aleatorio y no siempre sucede y cuando sucede no siempre afecta a los mismos contenedores, en este caso se recomienda detener los contenedores y reintentar o utilizar los demas clientes que si funcionan, dado que el cliente bugueado si aparece conectado y ejecutandose pero el attach no se realiza de manera correcta y no se pueden ingresar comandos o ver el menú.**
+
 - Para ver los nombres de los contenedores activos utilizar
 
 ```console
@@ -52,7 +55,7 @@ docker stop $(docker ps -a -q)
         |    |-app
         |       |-Cliente.py    --->> Código python del cliente
         |    |-Chat.proto       --->> Definición de servicios Protocol Buffer
-        |    |-Dockerfile       --->> Dockerfile container del cliente
+        |    |-Dockerfile       --->> Dockerfile contendor del cliente
         |    |-requirements.txt --->> Librerias requeridas por el cliente
         |-Protos
         |    |-Chat.proto
@@ -60,7 +63,7 @@ docker stop $(docker ps -a -q)
         |    |-app
         |       |-Server.py     --->> Código python del cliente
         |    |-Chat.proto       --->> Definición de servicios Protocol Bufffer
-        |    |-Dockerfile       --->> Dockerfile container del servidor
+        |    |-Dockerfile       --->> Dockerfile contenedor del servidor
         |    |-requirements.txt --->> Librerias requeridos por el servidor
         |-Docker_command.txt
         |-docker-compose.yml    --->> docker-compose para levantar la arquitectura distribuida
@@ -73,12 +76,12 @@ docker stop $(docker ps -a -q)
         |Client
         |    |-app
         |       |-cliente.py    --->> Código python del cliente
-        |    |-Dockerfile       --->> Dockerfile container del cliente
+        |    |-Dockerfile       --->> Dockerfile contenedor del cliente
         |    |-requirements.txt --->> Librerias requeridas por el cliente
         |-Server
         |    |-app
         |       |-server.py     --->> Código python del cliente
-        |    |-Dockerfile       --->> Dockerfile container del servidor
+        |    |-Dockerfile       --->> Dockerfile contenedor del servidor
         |    |-requirements.txt --->> Librerias requeridos por el servidor
         |-docker-compose.yml    --->> docker-compose para levantar la arquitectura distribuida
         |-1S_3C-bat             --->> Script para levantar 1 servidor y 3 clientes en Windows Powershell
