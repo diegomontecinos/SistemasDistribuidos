@@ -49,3 +49,18 @@ docker-compose up --scale cliente=4
 docker stop $(docker ps -a -q)
 ```
 ## Pregunta-2-RabbitMQ
+### Estructura de archivos.
+    -Pregunta-2-RabbitMQ-
+        |Client
+        |    |-app
+        |       |-cliente.py    --->> Código python del cliente
+        |    |-Dockerfile       --->> Dockerfile container del cliente
+        |    |-requirements.txt --->> Librerias requeridas por el cliente
+        |-Server
+        |    |-app
+        |       |-server.py     --->> Código python del cliente
+        |    |-Dockerfile       --->> Dockerfile container del servidor
+        |    |-requirements.txt --->> Librerias requeridos por el servidor
+        |-docker-compose.yml    --->> docker-compose para levantar la arquitectura distribuida
+        |-1S_3C-bat             --->> Script para levantar 1 servidor y 3 clientes en Windows Powershell
+### Instrucciones de uso
