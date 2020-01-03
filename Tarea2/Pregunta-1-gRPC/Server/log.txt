@@ -1,4 +1,0 @@
-Cliente-1_Cliente-1_19-Dec-2019|05:33:56#Buenos dias cliente 1
-Cliente-2_Cliente-1_19-Dec-2019|05:35:02#cliente 1 las waeasdas
-Cliente-1_Cliente-2_19-Dec-2019|05:35:19#cliente 2 chupalo
-Cliente-2_Cliente-1_19-Dec-2019|05:58:29#mensaje de prueba cpara as cliente 1
