@@ -97,6 +97,7 @@ if __name__ == '__main__':
     hiloID.start()
     time.sleep(0.5)
     flag = True
+    entrada = input("Presione una tecla para continuar")
     if cliente.IdCliente != '':
         while flag:
             #print("mi ID: ", cliente.IdCliente)
@@ -142,7 +143,7 @@ if __name__ == '__main__':
             
             #opcion no válida
             else:
-                print('opción no válida, intente nuevamente')
+                print('opcion no valida, intente nuevamente')
         print("ha decidido salir")
         print("adios.")
         sys.exit()
